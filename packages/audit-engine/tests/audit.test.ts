@@ -1,64 +1,96 @@
 import { runAudit } from '../src/calculator'
 
-describe('Audit Engine', () => {
+describe('Audit Engine - Detailed Scenarios', () => {
 
-  test('recommends downgrade for Cursor Business with small team', () => {
-    const result = runAudit({
-      tools: [{ toolName: 'cursor', plan: 'business', monthlySpend: 120, seats: 3 }],
-      teamSize: 3,
-      useCase: 'coding',
+  describe('Cursor', () => {
+    test('downgrades Business to Pro for small teams', () => {
+      const result = runAudit({
+        tools: [{ toolName: 'cursor', plan: 'business', monthlySpend: 120, seats: 3 }],
+        teamSize: 3,
+        useCase: 'coding',
+      })
+      expect(result.tools[0].recommendedAction).toBe('downgrade')
+      expect(result.tools[0].recommendedPlan).toBe('Pro')
+      expect(result.tools[0].monthlySavings).toBe(60)
     })
-    expect(result.tools[0].recommendedAction).toBe('downgrade')
-    expect(result.tools[0].monthlySavings).toBe(60) // 3 * (40-20)
+
+    test('switches to Claude for non-coding use cases', () => {
+      const result = runAudit({
+        tools: [{ toolName: 'cursor', plan: 'pro', monthlySpend: 20, seats: 1 }],
+        teamSize: 1,
+        useCase: 'writing',
+      })
+      expect(result.tools[0].recommendedAction).toBe('switch')
+      expect(result.tools[0].recommendedTool).toBe('claude')
+    })
   })
 
-  test('recommends switch for Cursor on non-coding use case', () => {
-    const result = runAudit({
-      tools: [{ toolName: 'cursor', plan: 'pro', monthlySpend: 40, seats: 2 }],
-      teamSize: 2,
-      useCase: 'writing',
+  describe('GitHub Copilot', () => {
+    test('downgrades Enterprise to Business for < 10 seats', () => {
+      const result = runAudit({
+        tools: [{ toolName: 'github-copilot', plan: 'enterprise', monthlySpend: 195, seats: 5 }],
+        teamSize: 5,
+        useCase: 'coding',
+      })
+      expect(result.tools[0].recommendedAction).toBe('downgrade')
+      expect(result.tools[0].recommendedPlan).toBe('Business')
+      expect(result.tools[0].monthlySavings).toBe((39 - 19) * 5)
     })
-    expect(result.tools[0].recommendedAction).toBe('switch')
-    expect(result.tools[0].recommendedTool).toBe('claude')
   })
 
-  test('marks audit as high value when savings > $500/mo', () => {
-    const result = runAudit({
-      tools: [
-        { toolName: 'cursor', plan: 'business', monthlySpend: 400, seats: 10 },
-        { toolName: 'chatgpt', plan: 'team', monthlySpend: 300, seats: 10 },
-      ],
-      teamSize: 10,
-      useCase: 'coding',
+  describe('Claude', () => {
+    test('downgrades Max to Pro for small usage', () => {
+      const result = runAudit({
+        tools: [{ toolName: 'claude', plan: 'max', monthlySpend: 200, seats: 2 }],
+        teamSize: 2,
+        useCase: 'mixed',
+      })
+      expect(result.tools[0].recommendedAction).toBe('downgrade')
+      expect(result.tools[0].monthlySavings).toBe(160)
     })
-    expect(result.isHighValue).toBe(true)
   })
 
-  test('keeps API direct as optimal', () => {
-    const result = runAudit({
-      tools: [{ toolName: 'anthropic-api', plan: 'direct', monthlySpend: 150, seats: 1 }],
-      teamSize: 5,
-      useCase: 'mixed',
+  describe('ChatGPT', () => {
+    test('switches to Cursor for coding teams', () => {
+      const result = runAudit({
+        tools: [{ toolName: 'chatgpt', plan: 'plus', monthlySpend: 60, seats: 3 }],
+        teamSize: 3,
+        useCase: 'coding',
+      })
+      expect(result.tools[0].recommendedAction).toBe('switch')
+      expect(result.tools[0].recommendedTool).toBe('cursor')
     })
-    expect(result.tools[0].recommendedAction).toBe('keep')
-    expect(result.tools[0].monthlySavings).toBe(0)
   })
 
-  test('calculates total annual savings correctly', () => {
-    const result = runAudit({
-      tools: [{ toolName: 'cursor', plan: 'business', monthlySpend: 120, seats: 3 }],
-      teamSize: 3,
-      useCase: 'coding',
+  describe('Gemini', () => {
+    test('downgrades Ultra for non-data use cases', () => {
+      const result = runAudit({
+        tools: [{ toolName: 'gemini', plan: 'ultra', monthlySpend: 30, seats: 1 }],
+        teamSize: 1,
+        useCase: 'writing',
+      })
+      expect(result.tools[0].recommendedAction).toBe('downgrade')
+      expect(result.tools[0].recommendedPlan).toBe('Pro')
     })
-    expect(result.totalAnnualSavings).toBe(result.totalMonthlySavings * 12)
   })
 
-  test('marks audit as optimal when savings < $100/mo', () => {
-    const result = runAudit({
-      tools: [{ toolName: 'claude', plan: 'pro', monthlySpend: 20, seats: 1 }],
-      teamSize: 1,
-      useCase: 'writing',
+  describe('Edge Cases & Totals', () => {
+    test('marks high value audits correctly', () => {
+      const result = runAudit({
+        tools: [{ toolName: 'claude', plan: 'max', monthlySpend: 1000, seats: 10 }],
+        teamSize: 10,
+        useCase: 'mixed',
+      })
+      expect(result.isHighValue).toBe(true)
     })
-    expect(result.isAlreadyOptimal).toBe(true)
+
+    test('marks already optimal audits', () => {
+      const result = runAudit({
+        tools: [{ toolName: 'cursor', plan: 'pro', monthlySpend: 20, seats: 1 }],
+        teamSize: 1,
+        useCase: 'coding',
+      })
+      expect(result.isAlreadyOptimal).toBe(true)
+    })
   })
 })

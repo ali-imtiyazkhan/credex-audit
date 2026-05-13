@@ -1,159 +1,50 @@
-# Turborepo starter
+# SpendSmart AI 💰
 
-This Turborepo starter is maintained by the Turborepo core team.
+SpendSmart AI is a specialized audit platform designed to help teams and startups optimize their AI tool spend. It analyzes your current stack (Cursor, Copilot, Claude, ChatGPT, etc.) and provides data-backed recommendations to save up to 60% on monthly subscriptions.
 
-## Using this example
+## 🚀 Features
 
-Run the following command:
+- **Multi-Tool Audit**: Supports 8+ major AI tools and their various pricing tiers.
+- **Smart Recommendations**: Logic-driven suggestions (Keep, Switch, Downgrade, Optimize).
+- **AI-Powered Summary**: Integrated with Anthropic Claude to give you a punchy executive summary.
+- **Lead Generation**: Captures high-value leads for personalized consultation.
+- **Shareable Results**: Generates unique URLs for every audit with custom SEO previews.
 
-```sh
-npx create-turbo@latest
+## 🛠️ Tech Stack
+
+- **Monorepo**: Turborepo
+- **Frontend**: Next.js 15 (App Router), Tailwind CSS 3, Lucide React
+- **Backend**: Node.js, Express, Prisma ORM
+- **Database**: PostgreSQL (Neon)
+- **AI**: Anthropic SDK (Claude 3.5 Sonnet)
+- **Email**: Resend
+- **Testing**: Jest
+
+## 📦 Project Structure
+
+```text
+├── apps
+│   ├── api          # Express server with Prisma & AI integration
+│   └── web          # Next.js frontend with shadcn-style UI
+├── packages
+│   ├── audit-engine # Core calculation logic & pricing rules
+│   ├── database     # Shared Prisma client & schema
+│   └── types        # Shared TypeScript interfaces
 ```
 
-## What's inside?
+## 🚥 Quick Start
 
-This Turborepo includes the following packages/apps:
+1. **Clone the repo**
+2. **Install dependencies**: `npm install`
+3. **Set up Environment Variables**:
+   - Create `.env` in the root and `apps/web/.env.local`.
+   - Add `DATABASE_URL`, `ANTHROPIC_API_KEY`, `RESEND_API_KEY`, and `NEXT_PUBLIC_API_URL`.
+4. **Run migrations**: `npx turbo run db:generate`
+5. **Start development**: `npm run dev`
 
-### Apps and Packages
+## 🧪 Testing
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+Run the audit engine test suite:
+```bash
+npm run test
 ```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo build
-npm dlx turbo build
-npm exec turbo build
-```
-
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo build --filter=docs
-npm exec turbo build --filter=docs
-npm exec turbo build --filter=docs
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo dev
-npm exec turbo dev
-npm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-npm exec turbo dev --filter=web
-npm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-npm exec turbo login
-npm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-npm exec turbo link
-npm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
